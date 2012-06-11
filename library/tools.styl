@@ -1,0 +1,23 @@
+// =========
+// = Tools =
+// =========
+vendor(prop, args)
+	-webkit-{prop} args
+	-moz-{prop} args
+	-ms-{prop} args
+	-o-{prop} args
+	{prop} args
+border-radius()
+	vendor('border-radius', arguments)
+box-shadow(x,y,s,c)
+	box-shadow(x,y,s,c)
+
+// Contain floats http://colinaarts.com/articles/float-containment/
+clearfix()
+	*zoom:1
+	&:before,
+	&:after
+		content:""
+		display:table
+	&:after
+		clear:both
