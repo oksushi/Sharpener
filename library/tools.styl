@@ -3,14 +3,39 @@
 // =========
 vendor(prop, args)
 	-webkit-{prop} args
-	-moz-{prop} args
-	-ms-{prop} args
-	-o-{prop} args
-	{prop} args
+	   -moz-{prop} args
+	    -ms-{prop} args
+	     -o-{prop} args
+	        {prop} args
+
 border-radius()
 	vendor('border-radius', arguments)
-box-shadow(x,y,s,c)
-	box-shadow(x,y,s,c)
+
+box-shadow()
+	vendor('box-shadow', arguments)
+
+transition()
+	vendor('transition', arguments)
+
+transform()
+	vendor('transform', arguments)
+
+transform-origin()
+	vendor('transform-origin', arguments)
+
+user-select()
+	vendor('user-select', arguments)
+
+background-linear-gradient(startPoint, startColor, startInterval, endColor, endInterval)
+	background-color startColor
+	background-image -webkit-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image -moz-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image -ms-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image -o-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+
+animation()
+	vendor('animation', arguments)
 
 // Contain floats http://colinaarts.com/articles/float-containment/
 clearfix()
@@ -21,3 +46,108 @@ clearfix()
 		display:table
 	&:after
 		clear:both
+
+// Image replacement
+ir()
+	width = arguments ? arguments[0] : 100%
+	height = arguments && arguments[1] ? arguments[1] : false
+	height = height ? height : width
+
+	direction ltr
+	display block
+	height height
+	overflow hidden
+	text-align left
+	text-indent 100%
+	white-space nowrap
+	width width
+
+.ir
+	ir()
+
+// @font-family
+font(name, path, prefix, weight)
+	font-family name
+	src: url(path + prefix + '.eot')
+	src: url(path + prefix + '.eot?#iefix') format(embedded-opentype)
+	src: url(path + prefix + '.woff') format(woff)
+	src: url(path + prefix + '.ttf') format(truetype)
+	src: url(path + prefix + '.svg#' + name) format(svg)
+	if (weight = bold)
+		font-weight bold
+		font-style normal
+	else if (weight = italic)
+		font-weight normal
+		font-style italic
+	else
+		font-weight normal
+		font-style normal
+
+// Darken on :hover
+hover-darken(percent)
+	if @background
+		&:hover
+			background: darken(@background, percent)
+
+// Visual box style
+boxify(light-color, dark-color)
+	background-color light-color
+	background -moz-linear-gradient(top, light-color, dark-color)
+	background -webkit-gradient(linear, 0% 0%, 0% 100%, from(light-color), to(dark-color))
+	border 1px solid darken(dark-color, 10%)
+	box-shadow 0 1px 0 0 lighten(light-color, 20%) inset
+	text-shadow 0 1px 0 #FFF
+
+// Mix two colours together
+mix(source, target, amount)
+	amount = unit(amount, '%')
+	unless source is a 'rgba' and target is a 'rgba'
+		error('mix() expects rgb colour values')
+	rs = red(source)
+	gs = green(source)
+	bs = blue(source)
+
+	rt = red(target)
+	gt = green(target)
+	bt = blue(target)
+
+	amount-s = (100 - amount) / 100
+	amount-t = amount / 100
+
+	r = round((rs * amount-s) + (rt * amount-t))
+	g = round((gs * amount-s) + (gt * amount-t))
+	b = round((bs * amount-s) + (bt * amount-t))
+
+	rgb(r,g,b)
+	
+// Cross browser rgba
+// background transparency
+background-transparency(color, alpha = 1)
+	ms-color = argb(color, alpha)
+	background rgb(color)
+	background rgba(color, alpha)
+	.lt-ie8 &
+		zoom 1
+	.lt-ie9 &
+		background transparent
+		filter s('progid:DXImageTransform.Microsoft.gradient(startColorstr=%s,endColorstr=%s)', ms-color, ms-color)
+	&:nth-child(n)
+		filter none
+
+hex(decimal)
+	hex-value = ('0') ('1') ('2') ('3') ('4') ('5') ('6') ('7') ('8') ('9') ('A') ('B') ('C') ('D') ('E') ('F')
+	unquote(hex-value[floor(decimal / 16)] + hex-value[floor(decimal % 16)])
+
+argb(color, alpha = 1)
+	unquote('#') + hex(alpha * 255) + hex(red(color)) + hex(green(color)) + hex(blue(color))
+  
+
+// Visual Effects
+input[type=text]
+input[type=password]
+	transition: border 200ms, box-shadow 200ms
+	box-shadow: inset 0 1px 3px rgba(black,.1)
+	&:focus
+		outline: none
+		border-color: rgba(82,168,236,.8)
+		box-shadow: inset 0 1px 3px rgba(black,.1), 0 0 8px rgba(82,168,236,.6)
